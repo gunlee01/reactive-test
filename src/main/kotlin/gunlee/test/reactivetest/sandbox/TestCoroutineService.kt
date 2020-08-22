@@ -41,6 +41,20 @@ class TestCoroutineService {
         return webClient.get().uri("/delay/1").awaitExchange().awaitBody()
     }
 
+    suspend fun testWebCallCoroutineException(): String {
+        val webClient = WebClient.create("https://httpbin.org")
+        val awaitBody: String = webClient.get().uri("/delay/1").awaitExchange().awaitBody()
+        if (true) {
+            throw RuntimeException("test3");
+        }
+        return awaitBody
+    }
+
+    suspend fun testWebCallCoroutine9(): String {
+        val webClient = WebClient.create("https://httpbin.org")
+        return webClient.get().uri("/delay/9").awaitExchange().awaitBody()
+    }
+
     val executor: ExecutorService = Executors.newFixedThreadPool(10)
 
     suspend fun testWithContext(): String? = withContext(executor.asCoroutineDispatcher()) {

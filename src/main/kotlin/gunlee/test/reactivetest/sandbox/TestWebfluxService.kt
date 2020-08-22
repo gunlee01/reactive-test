@@ -45,6 +45,31 @@ class TestWebfluxService {
         return webClient.get().uri("/delay/1").retrieve().bodyToMono(String::class.java)
     }
 
+    fun testWebCall404(): Mono<String> {
+        val webClient = WebClient.create("https://httpbin.org")
+        return webClient.get().uri("/status/404").retrieve().bodyToMono(String::class.java)
+    }
+
+    fun testWebCall500(): Mono<String> {
+        val webClient = WebClient.create("https://httpbin.org")
+        return webClient.get().uri("/status/500").retrieve().bodyToMono(String::class.java)
+    }
+
+    fun testSelfWebCall(): Mono<String> {
+        val webClient = WebClient.create("http://127.0.0.1:8080")
+        return webClient.get().uri("/test-webcall-1").retrieve().bodyToMono(String::class.java)
+    }
+
+    fun testSelfWebCall2(): Mono<String> {
+        val webClient = WebClient.create("http://127.0.0.1:8080")
+        return webClient.get().uri("/test-mono").retrieve().bodyToMono(String::class.java)
+    }
+
+    fun testWebCall9(): Mono<String> {
+        val webClient = WebClient.create("https://httpbin.org")
+        return webClient.get().uri("/delay/9").retrieve().bodyToMono(String::class.java)
+    }
+
     fun testSubscribeOn(): Mono<String> {
         return Mono.just("test")
                 .map {

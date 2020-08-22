@@ -33,7 +33,11 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-data-redis-reactive</artifactId>
 		</dependency>
-<!--		<dependency>-->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-data-mongodb-reactive</artifactId>
+		</dependency>
+		<!--		<dependency>-->
 <!--			<groupId>org.springframework.boot</groupId>-->
 <!--			<artifactId>spring-boot-starter-jdbc</artifactId>-->
 <!--		</dependency>-->
@@ -56,6 +60,10 @@
 			<artifactId>reactor-kotlin-extensions</artifactId>
 		</dependency>
 		<dependency>
+			<groupId>io.projectreactor</groupId>
+			<artifactId>reactor-tools</artifactId>
+		</dependency>
+		<dependency>
 			<groupId>org.jetbrains.kotlin</groupId>
 			<artifactId>kotlin-reflect</artifactId>
 		</dependency>
@@ -67,7 +75,13 @@
 			<groupId>org.jetbrains.kotlinx</groupId>
 			<artifactId>kotlinx-coroutines-reactor</artifactId>
 		</dependency>
-<!--		<dependency>-->
+		<dependency>
+			<groupId>org.springframework.cloud</groupId>
+			<artifactId>spring-cloud-sleuth-reactor</artifactId>
+			<version>1.3.6.RELEASE</version>
+		</dependency>
+
+		<!--		<dependency>-->
 <!--			<groupId>org.springframework.cloud</groupId>-->
 <!--			<artifactId>spring-cloud-starter-circuitbreaker-reactor-resilience4j</artifactId>-->
 <!--		</dependency>-->
