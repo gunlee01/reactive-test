@@ -1,11 +1,5 @@
 package gunlee.test.reactivetest.sandbox
 
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.launch
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.server.reactive.ServerHttpRequest
 import org.springframework.web.bind.annotation.GetMapping
@@ -16,8 +10,6 @@ import reactor.core.publisher.Mono
 import reactor.core.publisher.SynchronousSink
 import java.util.*
 import java.util.function.Consumer
-import kotlin.coroutines.coroutineContext
-
 
 /**
  * @author Gun Lee (gunlee01@gmail.com) on 29/07/2020
@@ -52,9 +44,6 @@ class SandBoxController {
 
 
      */
-
-    @Autowired
-    lateinit var testCoroutineService: TestCoroutineService
 
     @Autowired
     lateinit var testWebfluxService: TestWebfluxService
@@ -114,28 +103,6 @@ class SandBoxController {
         return testWebCall
     }
 
-    @GetMapping("/test-c-exception")
-    suspend fun testCoroutineException(request: ServerHttpRequest): String {
-        println("Thread=${Thread.currentThread().name}")
-        val testWebCall = testCoroutineService.testWebCallCoroutine();
-        if (true) {
-            throw RuntimeException("text ex!")
-        }
-
-        return testWebCall + "a"
-    }
-
-    @GetMapping("/test-c-exception3")
-    suspend fun testCoroutineException3(request: ServerHttpRequest): String {
-        println("Thread=${Thread.currentThread().name}")
-        val testWebCall = testCoroutineService.testWebCallCoroutineException();
-        if (true) {
-            throw RuntimeException("text ex0!")
-        }
-
-        return testWebCall + "a"
-    }
-
     @GetMapping("/test-webcall")
     fun testWebCall(request: ServerHttpRequest): Mono<String> {
         println("Thread=${Thread.currentThread().name}")
@@ -193,30 +160,6 @@ class SandBoxController {
         return testWebfluxService.testWebCall9()
     }
 
-    @GetMapping("/test-webcall-coroutine")
-    suspend fun testWebCallWithCoroutine(request: ServerHttpRequest): String {
-        println("Thread=${Thread.currentThread().name}")
-        testCoroutineService.testWebCallCoroutine()
-        println("Thread=${Thread.currentThread().name}")
-        testCoroutineService.testWebCallCoroutine()
-        println("Thread=${Thread.currentThread().name}")
-        val resp = testCoroutineService.testWebCallCoroutine()
-        println("Thread=${Thread.currentThread().name}")
-        return resp
-    }
-
-    @GetMapping("/test-webcall-coroutine-1")
-    suspend fun testWebCallWithCoroutine1(request: ServerHttpRequest): String {
-        val resp = testCoroutineService.testWebCallCoroutine()
-        return resp
-    }
-
-    @GetMapping("/test-webcall-coroutine-9")
-    suspend fun testWebCallWithCoroutine9(request: ServerHttpRequest): String {
-        val resp = testCoroutineService.testWebCallCoroutine9()
-        return resp
-    }
-
     @GetMapping("/test-subscribe-on")
     fun testSubscribeOn(request: ServerHttpRequest): Mono<String> {
         println("Thread=${Thread.currentThread().name}")
@@ -249,95 +192,10 @@ class SandBoxController {
         return test
     }
 
-
-    @GetMapping("/test-coroutine")
-    suspend fun testCoroutine(request: ServerHttpRequest): Test {
-
-        val scope = CoroutineScope(coroutineContext)
-        scope.launch {
-            println("controller 0 Thread=${Thread.currentThread().name} coroutine hashcode=${coroutineContext}")
-        }
-        println("controller 1 Thread=${Thread.currentThread().name} coroutine hashcode=${kotlin.coroutines.coroutineContext}")
-        val name = testCoroutineService.test()
-        println("controller 2 Thread=${Thread.currentThread().name} coroutine hashcode=${kotlin.coroutines.coroutineContext}")
-
-        return Test(name)
-    }
-
     @GetMapping("/test/{id}")
     suspend fun findOne(@PathVariable id: Int): Test? {
         println("Thread=${Thread.currentThread().name}")
         return Test(id.toString())
-    }
-
-    @GetMapping("/test-sleep")
-    suspend fun findSleep(): Test? {
-        println("Thread=${Thread.currentThread().name}")
-        delay(3500)
-        println(">>> sleep done");
-        return Test("10000")
-    }
-
-    @GetMapping("/test-sleep-long")
-    suspend fun findSleepLong(): Test? {
-        println("Thread=${Thread.currentThread().name}")
-        delay(15000)
-        println(">>> sleep done");
-        return Test("10000")
-    }
-
-    @GetMapping("/test-sleep-error")
-    suspend fun findSleepError(): Test? {
-        println("Thread=${Thread.currentThread().name}")
-        delay(3500)
-        println(">>> sleep done");
-        if (true) {
-            throw Exception("TEST EXCEPTION");
-        }
-        return Test("10000")
-    }
-
-    @GetMapping("/test-with-context")
-    suspend fun testWithContext(): Test? {
-        println("Thread=${Thread.currentThread().name}")
-        delay(1500)
-        testCoroutineService.testWithContext()
-        println(">>> sleep done");
-        return Test("10000")
-    }
-
-    @GetMapping("/test-threadlocal")
-    suspend fun testThreadLocal(): Test? {
-        println("Thread=${Thread.currentThread().name}")
-        testCoroutineService.testThreadLocal()
-        return Test("10000")
-    }
-
-//    @GetMapping("/test-sleep-flow-error")
-//    fun findSleepFlowError(): Flow<Int> {
-//        println("Thread=${Thread.currentThread().name}")
-//        delay(3500)
-//        println(">>> sleep done");
-//        if (true) {
-//            throw Exception("TEST EXCEPTION");
-//        }
-//        return foo()
-//    }
-
-    @GetMapping("/test-sleep-flow")
-    fun findSleep2(): Flow<Int> {
-        println("Thread=${Thread.currentThread().name}")
-        return foo()
-    }
-
-    @GetMapping("/test-flow100")
-    fun findFlow100(): Flow<Int> {
-        return foo100()
-    }
-
-    @GetMapping("/test-flow100-2")
-    fun findFlow100_2(): Flow<Int> {
-        return foo100().map { it * 2 }
     }
 
     @GetMapping("/test-flux-100")
@@ -357,19 +215,6 @@ class SandBoxController {
                 }
         )
         return seq.map { it * 2 }
-    }
-
-    fun foo(): Flow<Int> = flow { // flow builder
-        for (i in 1..5) {
-            delay(1000) // pretend we are doing something useful here
-            emit(i) // emit next value
-        }
-    }
-
-    fun foo100(): Flow<Int> = flow { // flow builder
-        for (i in 1..100) {
-            emit(i) // emit next value
-        }
     }
 
     data class Test(val name: String) {

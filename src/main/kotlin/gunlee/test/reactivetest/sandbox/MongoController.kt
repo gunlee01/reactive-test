@@ -18,11 +18,6 @@
 
 package gunlee.test.reactivetest.sandbox
 
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.toList
-import kotlinx.coroutines.reactive.asFlow
-import kotlinx.coroutines.reactive.awaitFirstOrNull
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.server.reactive.ServerHttpRequest
 import org.springframework.stereotype.Service
@@ -39,8 +34,6 @@ class MongoController {
 
     @Autowired
     lateinit var reactiveMongoService: ReactiveMongoService
-    @Autowired
-    lateinit var coroutineMongoService: CoroutineMongoService
 
     @GetMapping("/mongo")
     fun mongo(request: ServerHttpRequest): Mono<String> {
@@ -64,24 +57,6 @@ class MongoController {
         val test = reactiveMongoService.mongoAll()
 
         return test
-    }
-
-
-    @GetMapping("/mongo-co")
-    suspend fun mongoCoroutine(request: ServerHttpRequest): String? {
-        println("Thread=${Thread.currentThread().name}")
-        val test = coroutineMongoService.mongo()
-
-        return test
-    }
-
-    @GetMapping("/mongo-flow")
-    suspend fun mongoFlowToList(request: ServerHttpRequest): List<String?> {
-        println("Thread=${Thread.currentThread().name}")
-        val empsFlux = coroutineMongoService.mongoAll()
-        val toList = empsFlux.toList()
-
-        return toList
     }
 }
 
@@ -116,26 +91,3 @@ class ReactiveMongoService {
     }
 }
 
-
-@Service
-class CoroutineMongoService {
-
-    @Autowired
-    lateinit var employeeRepository: EmployeeRepository
-
-    suspend fun mongo(): String? {
-        val emp = employeeRepository.findByName("Gun1").awaitFirstOrNull()
-        if (emp == null) {
-            return null
-        } else {
-            return emp.name
-        }
-    }
-
-    suspend fun mongoAll(): Flow<String?> {
-        val emps = employeeRepository.findAll().asFlow()
-        return emps.map {
-            it.name
-        }
-    }
-}
