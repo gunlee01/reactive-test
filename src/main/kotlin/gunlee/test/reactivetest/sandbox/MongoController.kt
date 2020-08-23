@@ -51,6 +51,14 @@ class MongoController {
         return test
     }
 
+    @GetMapping("/mongo-update")
+    fun mongoUpdate(request: ServerHttpRequest): Mono<Employee> {
+        println("Thread=${Thread.currentThread().name}")
+        val test = reactiveMongoService.mongoUpdate()
+
+        return test
+    }
+
     @GetMapping("/mongo-flux")
     fun mongoFlux(request: ServerHttpRequest): Flux<String> {
         println("Thread=${Thread.currentThread().name}")
@@ -73,7 +81,7 @@ class ReactiveMongoService {
         }
     }
 
-    fun mongoAdd(): Mono<Employee> {
+    fun mongoUpdate(): Mono<Employee> {
         val emp0 = Employee()
         emp0.name = "gun200"
         emp0.id = 200
@@ -81,6 +89,14 @@ class ReactiveMongoService {
         val emp1 = employeeRepository.findByName("gun200")
                 .flatMap { employeeRepository.save(it) }
         return emp1.next()
+    }
+
+    fun mongoAdd(): Mono<Employee> {
+        val emp0 = Employee()
+        emp0.name = "gun200"
+        emp0.id = 200
+
+        return employeeRepository.save(emp0)
     }
 
     fun mongoAll(): Flux<String> {
